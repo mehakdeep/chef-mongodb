@@ -40,12 +40,8 @@ define :mongodb_instance,
       # mongos will fail to start if dbpath is set
       #    node.default['mongodb']['config']['dbpath'] = nil
 
-      ruby_block 'delete unwanted attributes' do
-        block do
-          ["dbpath","nojournal","rest","smallfiles"].each do |attribute|
-            node.rm_override("mongodb", "config", attribute)
-          end
-        end
+      ["dbpath","nojournal","rest","smallfiles"].each do |attribute|
+        node.rm_override("mongodb", "config", attribute)
       end
 
       unless node['mongodb']['config']['configdb']
