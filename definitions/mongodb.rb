@@ -38,15 +38,7 @@ define :mongodb_instance,
     if node['mongodb']['is_mongos']
       provider = 'mongos'
       # mongos will fail to start if dbpath is set
-      #    node.default['mongodb']['config']['dbpath'] = nil
-      ruby_block 'delete-unwanted-attributes' do
-        block do
-          ["dbpath","nojournal","rest","smallfiles"].each do |attribute|
-            node.rm_default("mongodb", "config", attribute)
-          end
-        end
-      end
-
+      node.default['mongodb']['config']['dbpath'] = nil
       unless node['mongodb']['config']['configdb']
         node.default['mongodb']['config']['configdb'] = params[:configservers].map do |n|
           "#{(n['mongodb']['configserver_url'] || n['fqdn'])}:#{n['mongodb']['config']['port']}"
@@ -166,16 +158,6 @@ define :mongodb_instance,
         action :create
         recursive true
       end
-    end
-
-    # dbpath dir [make sure it exists]
-    directory new_resource.dbpath do
-      owner new_resource.mongodb_user
-      group new_resource.mongodb_group
-      mode '0755'
-      action :create
-      recursive true
-      not_if { new_resource.is_mongos }
     end
 
     # Reload systemctl for RHEL 7+ after modifying the init file.
