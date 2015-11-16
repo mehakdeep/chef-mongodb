@@ -41,7 +41,7 @@ define :mongodb_instance,
       node.default['mongodb']['config']['dbpath'] = nil
       unless node['mongodb']['config']['configdb']
         node.default['mongodb']['config']['configdb'] = params[:configservers].map do |n|
-          "#{(n['mongodb']['configserver_url'] || n['fqdn'])}:#{n['mongodb']['config']['port']}"
+          "#{(n['mongodb']['configserver_url'] || n['hostname'])}:#{n['mongodb']['config']['port']}"
         end.sort.join(',')
       end
     else
